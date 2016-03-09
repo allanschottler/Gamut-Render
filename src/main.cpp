@@ -1,6 +1,8 @@
 #include <iostream>
 
+#include "GamutApplication.h"
+
 int main( void )
 {
-    std::cout << "Hello!\n";
+    GamutApplication::getInstance()->mainLoop();
 }

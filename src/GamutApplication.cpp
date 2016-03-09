@@ -38,3 +38,13 @@ GamutApplication* GamutApplication::getInstance()
     return _instance;
 }
 
+
+void GamutApplication::mainLoop()
+{
+    _viewer.realize();
+    
+    while( !_viewer.done() )
+    {        
+        _viewer.frame();
+    }
+}

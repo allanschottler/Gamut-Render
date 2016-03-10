@@ -62,20 +62,6 @@ void GamutApplication::initScene()
     gamutGeode->addDrawable( axisGeometry );
     
     _sceneNode->addChild( gamutGeode );
-    
-    /****************************************************/
-    /*DiscreteSpectrum* d65 = SpectrumsLoader::getCIED65();    
-    
-    unsigned int iWavelength;
-    for( iWavelength = SPECTRUM_FIRST_WL;
-         iWavelength < SPECTRUM_LAST_WL;
-         iWavelength += SPECTRUM_INC_WL )
-    {
-        float value = d65->valueOf( iWavelength );
-        
-        std::cout << value << std::endl;
-    }*/
-    /****************************************************/
 }
 
 

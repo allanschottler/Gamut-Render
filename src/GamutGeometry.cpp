@@ -30,7 +30,7 @@ void GamutGeometry::buildGeometry()
 {
     osg::ref_ptr< osg::Vec3Array > vertices = new osg::Vec3Array;
     osg::ref_ptr< osg::Vec4Array > colors = new osg::Vec4Array;    
-    osg::ref_ptr< osg::DrawElementsUInt > primitiveSet = new osg::DrawElementsUInt( osg::PrimitiveSet::POINTS, 0 );
+    osg::ref_ptr< osg::DrawElementsUInt > primitiveSet = new osg::DrawElementsUInt( osg::PrimitiveSet::POLYGON, 0 );
     
     unsigned int wavelength, index = 0;
     

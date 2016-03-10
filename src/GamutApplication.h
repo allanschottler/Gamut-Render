@@ -24,6 +24,8 @@ private:
     
     GamutApplication();
     
+    void initScene();
+    
     
     static GamutApplication* _instance;
     

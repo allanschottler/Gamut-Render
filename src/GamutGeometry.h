@@ -53,6 +53,8 @@ private:
     
     bool getRGB( int wavelength, float& r, float& g, float& b );
     
+    float box( int wl0, int wli, int wl );
+    
 
     RGBSpectrum& _rgbSpectrum;
     

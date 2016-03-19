@@ -51,9 +51,9 @@ private:
     
     void buildGeometry();
     
-    bool getRGB( int wavelength, float& r, float& g, float& b );
+    void getRGB( int wavelength, float& r, float& g, float& b );
     
-    float box( int wl0, int wli, int wl );
+    void getXYZ( int boxStart, int boxSize, float& x, float& y, float& z );
     
 
     RGBSpectrum& _rgbSpectrum;

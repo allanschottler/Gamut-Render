@@ -57,7 +57,7 @@ void GamutApplication::initScene()
     osg::ref_ptr< osg::Geometry > axisGeometry = new AxisGeometry();  
     
     osg::ref_ptr< osg::Point > point = new osg::Point;
-    point->setSize( 8 );
+    point->setSize( 4 );
     
     gamutGeode->getOrCreateStateSet()->setAttribute( point, osg::StateAttribute::ON );
     gamutGeode->getOrCreateStateSet()->setMode( GL_LIGHTING, osg::StateAttribute::OFF ); 

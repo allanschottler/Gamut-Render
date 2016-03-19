@@ -6,6 +6,7 @@
  */
 
 #include <sys/param.h>
+#include <assert.h>
 
 #include "GamutGeometry.h"
 
@@ -41,67 +42,27 @@ void GamutGeometry::buildGeometry()
          wavelength <= SPECTRUM_LAST_WL;
          wavelength += SPECTRUM_INC_WL )
     {
-        float r, g, b;
+        float r, g, b;        
+        getRGB( wavelength, r, g, b );
         
-        if( getRGB( wavelength, r, g, b ) )
-        {
-            invK += _illuminant->valueOf( wavelength ) * g;
-        }
+        invK += _illuminant->valueOf( wavelength ) * g;
     }
     
     float k = 1./( invK * SPECTRUM_INC_WL );
     
     for( boxSize = SPECTRUM_INC_WL; 
-         boxSize <= SPECTRUM_LAST_WL - SPECTRUM_FIRST_WL;
+         boxSize <= ( SPECTRUM_LAST_WL - SPECTRUM_FIRST_WL ) / SPECTRUM_INC_WL;
          boxSize += SPECTRUM_INC_WL )
     { 
         for( boxStart = SPECTRUM_FIRST_WL; 
              boxStart <= SPECTRUM_LAST_WL;
              boxStart += SPECTRUM_INC_WL )
         {
-            float x = 0;
-            float y = 0;
-            float z = 0;
-            
-            int boxEnd = boxStart + boxSize * SPECTRUM_INC_WL;
-            
-            if( boxEnd > SPECTRUM_LAST_WL )
-            {
-                int loopEnd = SPECTRUM_FIRST_WL + boxEnd - SPECTRUM_LAST_WL;
-                boxEnd = SPECTRUM_LAST_WL;
-                
-                for( wavelength = SPECTRUM_FIRST_WL;
-                     wavelength <= loopEnd;
-                     wavelength += SPECTRUM_INC_WL )
-                {
-                    float r, g, b;
-                    
-                    if( getRGB( wavelength, r, g, b ) )
-                    {
-                        x += _illuminant->valueOf( wavelength ) * r;
-                        y += _illuminant->valueOf( wavelength ) * g;
-                        z += _illuminant->valueOf( wavelength ) * b;
-                    }
-                }
-            }
-            
-            for( wavelength = boxStart;
-                 wavelength <= boxEnd;
-                 wavelength += SPECTRUM_INC_WL )
-            {
-                float r, g, b;
-                    
-                if( getRGB( wavelength, r, g, b ) )
-                {
-                    x += _illuminant->valueOf( wavelength ) * r;
-                    y += _illuminant->valueOf( wavelength ) * g;
-                    z += _illuminant->valueOf( wavelength ) * b;
-                }
-            }
+            float x, y, z;
+            getXYZ( boxStart, boxSize, x, y, z );
             
             osg::Vec3 point( x, y, z );
             point *= SPECTRUM_INC_WL;
-
             point *= k;
 
             vertices->push_back( point );            
@@ -118,28 +79,57 @@ void GamutGeometry::buildGeometry()
 }
 
 
-bool GamutGeometry::getRGB( int wavelength, float& r, float& g, float& b )
+void GamutGeometry::getRGB( int wavelength, float& r, float& g, float& b )
 {
-    r = _rgbSpectrum._r->valueOf( wavelength );// * 700.;
-    g = _rgbSpectrum._g->valueOf( wavelength );// * 546.;
-    b = _rgbSpectrum._b->valueOf( wavelength );// * 435.8;
-    
-    return true;
+    r = _rgbSpectrum._r->valueOf( wavelength ) * 700.;
+    g = _rgbSpectrum._g->valueOf( wavelength ) * 546.;
+    b = _rgbSpectrum._b->valueOf( wavelength ) * 435.8;
 }
 
 
-float GamutGeometry::box( int wl0, int wli, int wl )
-{    
-    if( wl0 + wli > SPECTRUM_LAST_WL )
+void GamutGeometry::getXYZ( int boxStart, int boxSize, float& x, float& y, float& z )
+{
+    int wavelength;
+    x = 0;
+    y = 0;
+    z = 0;
+    int sumSize = 0;
+
+    int boxEnd = boxStart + boxSize * SPECTRUM_INC_WL;
+
+    if( boxEnd > SPECTRUM_LAST_WL )
     {
-        if( wl >= SPECTRUM_FIRST_WL && wl < SPECTRUM_FIRST_WL + ( SPECTRUM_LAST_WL - wl0 + wli ) )
-            return 1.0f;
+        int loopEnd = SPECTRUM_FIRST_WL + ( boxEnd - SPECTRUM_LAST_WL );
+        boxEnd = SPECTRUM_LAST_WL;
+
+        for( wavelength = SPECTRUM_FIRST_WL;
+             wavelength < loopEnd;
+             wavelength += SPECTRUM_INC_WL )
+        {
+            float r, g, b;
+            getRGB( wavelength, r, g, b );
+            
+            x += _illuminant->valueOf( wavelength ) * r;
+            y += _illuminant->valueOf( wavelength ) * g;
+            z += _illuminant->valueOf( wavelength ) * b;
+            
+            sumSize++;
+        }
+    }
+
+    for( wavelength = boxStart;
+         wavelength < boxEnd;
+         wavelength += SPECTRUM_INC_WL )
+    {
+        float r, g, b;
+        getRGB( wavelength, r, g, b );
         
-        return 0.0f;    
+        x += _illuminant->valueOf( wavelength ) * r;
+        y += _illuminant->valueOf( wavelength ) * g;
+        z += _illuminant->valueOf( wavelength ) * b;       
+        
+        sumSize++;
     }
     
-    if( wl >= wl0 && wl < wl0 + wli )
-        return 1.0f;
-                
-    return 0.0f;
+    assert( sumSize == boxSize );
 }

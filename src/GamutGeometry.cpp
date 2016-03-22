@@ -74,7 +74,7 @@ void GamutGeometry::buildGeometry()
         float r, g, b;        
         getRGB( wavelength, r, g, b );
         
-        invK += _illuminant->valueOf( wavelength ) * b;
+        invK += _illuminant->valueOf( wavelength ) * b;//( _isXYZ ? g : b );
     }
     
     float k = 1./( invK * SPECTRUM_INC_WL );
@@ -93,14 +93,15 @@ void GamutGeometry::buildGeometry()
             osg::Vec3 point( x, y, z );
             point *= SPECTRUM_INC_WL;
             point *= k;
-
+            
+            colors->push_back( osg::Vec4( point, 1.0f ) );
+            
             if( _isXYZ )
             {
                 point = point * _rgbToXYZMatrix;
             }
             
             vertices->push_back( point );            
-            colors->push_back( osg::Vec4( point, 1.0f ) );
             primitiveSet->push_back( index++ );
         }        
     }

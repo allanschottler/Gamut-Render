@@ -38,8 +38,8 @@ bool KeyboardEventHandler::handle( const osgGA::GUIEventAdapter& ea, osgGA::GUIA
                     if( gamutGeometry )
                         gamutGeometry->setRenderMode( GamutGeometry::RGB );
                     
-                    if( axisGeometry )
-                        axisGeometry->setRenderMode( AxisGeometry::RGB );
+                    /*if( axisGeometry )
+                        axisGeometry->setRenderMode( AxisGeometry::RGB );*/
                     
                     
                     break;
@@ -52,8 +52,8 @@ bool KeyboardEventHandler::handle( const osgGA::GUIEventAdapter& ea, osgGA::GUIA
                     if( gamutGeometry )
                         gamutGeometry->setRenderMode( GamutGeometry::XYZ );
                     
-                    if( axisGeometry )
-                        axisGeometry->setRenderMode( AxisGeometry::XYZ );
+                    /*if( axisGeometry )
+                        axisGeometry->setRenderMode( AxisGeometry::XYZ );*/
                     
                     break;
                 }

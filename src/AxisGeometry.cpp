@@ -75,20 +75,20 @@ void AxisGeometry::buildGeometry()
         
         addPrimitiveSet( primitiveSet );
         
-        osg::ref_ptr< osg::DrawElementsUInt > primitiveSet2 = new osg::DrawElementsUInt( osg::PrimitiveSet::LINES, 0 );
+        /*osg::ref_ptr< osg::DrawElementsUInt > primitiveSet2 = new osg::DrawElementsUInt( osg::PrimitiveSet::LINES, 0 );
         
         primitiveSet2->push_back( i );
         primitiveSet2->push_back( i + 1 >= 4 ? 1 : i + 1 );
 
-        addPrimitiveSet( primitiveSet2 );
+        addPrimitiveSet( primitiveSet2 );*/
     }
     
     colors->push_back( osg::Vec4( xu, 1.0 ) );
-    colors->push_back( osg::Vec4( 1.0, 1.0, 1.0, 1.0 ) );
+    //colors->push_back( osg::Vec4( 1.0, 1.0, 1.0, 1.0 ) );
     colors->push_back( osg::Vec4( yu, 1.0 ) );
-    colors->push_back( osg::Vec4( 1.0, 1.0, 1.0, 1.0 ) );
+    //colors->push_back( osg::Vec4( 1.0, 1.0, 1.0, 1.0 ) );
     colors->push_back( osg::Vec4( zu, 1.0 ) );
-    colors->push_back( osg::Vec4( 1.0, 1.0, 1.0, 1.0 ) );
+    //colors->push_back( osg::Vec4( 1.0, 1.0, 1.0, 1.0 ) );
             
     setColorArray( colors );
     setColorBinding( osg::Geometry::BIND_PER_PRIMITIVE_SET );

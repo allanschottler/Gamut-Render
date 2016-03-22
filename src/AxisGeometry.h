@@ -14,14 +14,23 @@ class AxisGeometry : public osg::Geometry
 {
 public:
     
+    enum RenderMode
+    {
+        RGB,
+        XYZ
+    };
+    
     AxisGeometry();
     
     virtual ~AxisGeometry();
+    
+    void setRenderMode( RenderMode renderMode );
     
 private:
     
     void buildGeometry();
 
+    bool _isXYZ;
 };
 
 #endif	/* AXISGEOMETRY_H */

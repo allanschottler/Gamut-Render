@@ -8,15 +8,24 @@
 #include <sys/param.h>
 #include <assert.h>
 
+#include <osg/MatrixTransform>
+
 #include "GamutGeometry.h"
 
 #define SPECTRUM_FIRST_WL 380
 #define SPECTRUM_LAST_WL 780
 #define SPECTRUM_INC_WL 5
 
-GamutGeometry::GamutGeometry( RGBSpectrum& rgbSpectrum, DiscreteSpectrum* illuminant ) :
+const osg::Matrixd GamutGeometry::_rgbToXYZMatrix = osg::Matrixd( 
+0.490, 0.177, 0.000, 0.000,
+0.310, 0.813, 0.010, 0.000,
+0.200, 0.011, 0.990, 0.000,
+0.000, 0.000, 0.000, 1.000 );
+
+GamutGeometry::GamutGeometry( RGBSpectrum* rgbSpectrum, DiscreteSpectrum* illuminant ) :
     _rgbSpectrum( rgbSpectrum ),
-    _illuminant( illuminant )
+    _illuminant( illuminant ),
+    _isXYZ( false )
 {
     buildGeometry();
 }
@@ -26,6 +35,26 @@ GamutGeometry::~GamutGeometry()
 {
     delete _illuminant;
     _illuminant = 0;
+    
+    delete _rgbSpectrum;
+    _rgbSpectrum = 0;
+}
+
+
+void GamutGeometry::setRenderMode( RenderMode renderMode )
+{
+    switch( renderMode )
+    {
+        case RGB:
+            _isXYZ = false;
+            break;
+            
+        case XYZ:
+            _isXYZ = true;
+            break;
+    }
+    
+    buildGeometry();
 }
 
 
@@ -45,7 +74,7 @@ void GamutGeometry::buildGeometry()
         float r, g, b;        
         getRGB( wavelength, r, g, b );
         
-        invK += _illuminant->valueOf( wavelength ) * g;
+        invK += _illuminant->valueOf( wavelength ) * b;
     }
     
     float k = 1./( invK * SPECTRUM_INC_WL );
@@ -65,6 +94,11 @@ void GamutGeometry::buildGeometry()
             point *= SPECTRUM_INC_WL;
             point *= k;
 
+            if( _isXYZ )
+            {
+                point = point * _rgbToXYZMatrix;
+            }
+            
             vertices->push_back( point );            
             colors->push_back( osg::Vec4( point, 1.0f ) );
             primitiveSet->push_back( index++ );
@@ -81,9 +115,9 @@ void GamutGeometry::buildGeometry()
 
 void GamutGeometry::getRGB( int wavelength, float& r, float& g, float& b )
 {
-    r = _rgbSpectrum._r->valueOf( wavelength ) * 700.;
-    g = _rgbSpectrum._g->valueOf( wavelength ) * 546.;
-    b = _rgbSpectrum._b->valueOf( wavelength ) * 435.8;
+    r = _rgbSpectrum->_r->valueOf( wavelength ) * 700.;
+    g = _rgbSpectrum->_g->valueOf( wavelength ) * 546.;
+    b = _rgbSpectrum->_b->valueOf( wavelength ) * 435.8;
 }
 
 

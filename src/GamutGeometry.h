@@ -43,9 +43,19 @@ public:
         DiscreteSpectrum *_r, *_g, *_b;
     };
     
-    GamutGeometry( RGBSpectrum& rgbSpectrum, DiscreteSpectrum* illuminant );
+    enum RenderMode
+    {
+        RGB,
+        XYZ
+    };
+    
+    GamutGeometry( RGBSpectrum* rgbSpectrum, DiscreteSpectrum* illuminant );
     
     virtual ~GamutGeometry();
+    
+    void setRenderMode( RenderMode renderMode );
+        
+    static const osg::Matrixd _rgbToXYZMatrix;
     
 private:
     
@@ -56,9 +66,11 @@ private:
     void getXYZ( int boxStart, int boxSize, float& x, float& y, float& z );
     
 
-    RGBSpectrum& _rgbSpectrum;
+    RGBSpectrum* _rgbSpectrum;
     
     DiscreteSpectrum* _illuminant;
+    
+    bool _isXYZ;
 };
 
 #endif	/* GAMUTGEOMETRY_H */

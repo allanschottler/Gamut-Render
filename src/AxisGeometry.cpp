@@ -6,8 +6,12 @@
  */
 
 #include "AxisGeometry.h"
+#include "GamutGeometry.h"
 
-AxisGeometry::AxisGeometry() 
+#include <osg/MatrixTransform>
+
+AxisGeometry::AxisGeometry() :
+    _isXYZ( false )
 {
     buildGeometry();
 }
@@ -15,6 +19,24 @@ AxisGeometry::AxisGeometry()
 
 AxisGeometry::~AxisGeometry() 
 {
+}
+
+
+
+void AxisGeometry::setRenderMode( RenderMode renderMode )
+{
+    switch( renderMode )
+    {
+        case RGB:
+            _isXYZ = false;
+            break;
+            
+        case XYZ:
+            _isXYZ = true;
+            break;
+    }
+    
+    buildGeometry();
 }
 
 
@@ -28,6 +50,14 @@ void AxisGeometry::buildGeometry()
     osg::Vec3 yu( 0.0f, 1.0f, 0.0f );
     osg::Vec3 zu( 0.0f, 0.0f, 1.0f );
     
+    if( _isXYZ )
+    {
+        o = o * GamutGeometry::_rgbToXYZMatrix;
+        xu = xu * GamutGeometry::_rgbToXYZMatrix;
+        yu = yu * GamutGeometry::_rgbToXYZMatrix;
+        zu = zu * GamutGeometry::_rgbToXYZMatrix;
+    }
+    
     vertices->push_back( o );
     vertices->push_back( xu );
     vertices->push_back( yu );
@@ -35,19 +65,30 @@ void AxisGeometry::buildGeometry()
     
     setVertexArray( vertices );
     
+                
     for( unsigned int i = 1; i < 4; i++ )
-    {
+    {        
         osg::ref_ptr< osg::DrawElementsUInt > primitiveSet = new osg::DrawElementsUInt( osg::PrimitiveSet::LINES, 0 );
-        
+    
         primitiveSet->push_back( 0 );
         primitiveSet->push_back( i );
-
+        
         addPrimitiveSet( primitiveSet );
+        
+        osg::ref_ptr< osg::DrawElementsUInt > primitiveSet2 = new osg::DrawElementsUInt( osg::PrimitiveSet::LINES, 0 );
+        
+        primitiveSet2->push_back( i );
+        primitiveSet2->push_back( i + 1 >= 4 ? 1 : i + 1 );
+
+        addPrimitiveSet( primitiveSet2 );
     }
     
     colors->push_back( osg::Vec4( xu, 1.0 ) );
+    colors->push_back( osg::Vec4( 1.0, 1.0, 1.0, 1.0 ) );
     colors->push_back( osg::Vec4( yu, 1.0 ) );
+    colors->push_back( osg::Vec4( 1.0, 1.0, 1.0, 1.0 ) );
     colors->push_back( osg::Vec4( zu, 1.0 ) );
+    colors->push_back( osg::Vec4( 1.0, 1.0, 1.0, 1.0 ) );
             
     setColorArray( colors );
     setColorBinding( osg::Geometry::BIND_PER_PRIMITIVE_SET );

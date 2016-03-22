@@ -9,6 +9,7 @@
 #include "SpectrumsLoader.h"
 #include "GamutGeometry.h"
 #include "AxisGeometry.h"
+#include "KeyboardEventHandler.h"
 
 #include <osgGA/TrackballManipulator>
 #include <osg/Point>
@@ -30,7 +31,7 @@ GamutApplication::GamutApplication()
     _viewer.setCameraManipulator( manipulator );
     _viewer.getCamera()->setClearColor( osg::Vec4( 0.0f, 0.0f, 0.0f, 1.0f ) );
     _viewer.getCamera()->setCullingMode( 
-        _viewer.getCamera()->getCullingMode() & ~osg::CullSettings::SMALL_FEATURE_CULLING );   
+        _viewer.getCamera()->getCullingMode() & ~osg::CullSettings::SMALL_FEATURE_CULLING );
     
     _sceneNode = new osg::Group;
 	
@@ -47,7 +48,7 @@ GamutApplication::~GamutApplication()
 
 void GamutApplication::initScene()
 {
-    GamutGeometry::RGBSpectrum rgbSpectrum( 
+    GamutGeometry::RGBSpectrum* rgbSpectrum = new GamutGeometry::RGBSpectrum( 
         SpectrumsLoader::getCIERed(),
         SpectrumsLoader::getCIEGreen(),
         SpectrumsLoader::getCIEBlue() );
@@ -57,7 +58,7 @@ void GamutApplication::initScene()
     osg::ref_ptr< osg::Geometry > axisGeometry = new AxisGeometry();  
     
     osg::ref_ptr< osg::Point > point = new osg::Point;
-    point->setSize( 4 );
+    point->setSize( 6 );
     
     gamutGeode->getOrCreateStateSet()->setAttribute( point, osg::StateAttribute::ON );
     gamutGeode->getOrCreateStateSet()->setMode( GL_LIGHTING, osg::StateAttribute::OFF ); 
@@ -66,6 +67,8 @@ void GamutApplication::initScene()
     gamutGeode->addDrawable( axisGeometry );
     
     _sceneNode->addChild( gamutGeode );
+           
+    _viewer.addEventHandler( new KeyboardEventHandler( gamutGeometry, axisGeometry ) );
 }
 
 

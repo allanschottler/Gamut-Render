@@ -60,6 +60,10 @@ public:
         
     static const osg::Matrixd _rgbToXYZMatrix;
     
+    static const osg::Matrixd _rgbToLabMatrix;
+    
+    static const osg::Matrixd _rgbToSRGBMatrix;
+    
 private:
     
     void buildGeometry();
@@ -73,7 +77,7 @@ private:
     
     DiscreteSpectrum* _illuminant;
     
-    bool _isXYZ;
+    osg::Matrixd _currentMatrix;
 };
 
 #endif	/* GAMUTGEOMETRY_H */

@@ -22,10 +22,15 @@ const osg::Matrixd GamutGeometry::_rgbToXYZMatrix = osg::Matrixd(
 0.200, 0.011, 0.990, 0.000,
 0.000, 0.000, 0.000, 1.000 );
 
+const osg::Matrixd GamutGeometry::_rgbToSRGBMatrix = osg::Matrixd( 
+0.4124564, 0.2126729, 0.0193339, 0.0000000,
+0.3575761, 0.7151522, 0.1191920, 0.0000000,
+0.1804375, 0.0721750, 0.9503041, 0.0000000,
+0.0000000, 0.0000000, 0.0000000, 1.0000000 );
+
 GamutGeometry::GamutGeometry( RGBSpectrum* rgbSpectrum, DiscreteSpectrum* illuminant ) :
     _rgbSpectrum( rgbSpectrum ),
-    _illuminant( illuminant ),
-    _isXYZ( false )
+    _illuminant( illuminant )
 {
     buildGeometry();
 }
@@ -46,11 +51,15 @@ void GamutGeometry::setRenderMode( RenderMode renderMode )
     switch( renderMode )
     {
         case RGB:
-            _isXYZ = false;
+            _currentMatrix = osg::Matrixd::identity();
             break;
             
         case XYZ:
-            _isXYZ = true;
+            _currentMatrix = _rgbToXYZMatrix;
+            break;
+            
+        case SRGB:
+            _currentMatrix = _rgbToSRGBMatrix;
             break;
             
         default:
@@ -99,10 +108,7 @@ void GamutGeometry::buildGeometry()
             
             colors->push_back( osg::Vec4( point, 1.0f ) );
             
-            if( _isXYZ )
-            {
-                point = point * _rgbToXYZMatrix;
-            }
+            point = point * _currentMatrix;
             
             vertices->push_back( point );            
             primitiveSet->push_back( index++ );

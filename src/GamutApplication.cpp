@@ -18,9 +18,10 @@
 
 GamutApplication* GamutApplication::_instance = 0;
 
-GamutApplication::GamutApplication() 
+GamutApplication::GamutApplication() :
+    _window( new GamutMainWindow )
 {
-    _viewer.setUpViewInWindow( 0, 0, 800, 800 );
+    /*_viewer.setUpViewInWindow( 0, 0, 800, 800 );
         
     osg::ref_ptr< osgGA::TrackballManipulator > manipulator = new osgGA::TrackballManipulator();
     
@@ -35,9 +36,25 @@ GamutApplication::GamutApplication()
     
     _sceneNode = new osg::Group;
 	
-    _viewer.setSceneData( _sceneNode );    
+    _viewer.setSceneData( _sceneNode );*/
+    
+    osg::ref_ptr< osgGA::TrackballManipulator > manipulator = new osgGA::TrackballManipulator();
+    
+    osg::Vec3d eye, center, up, newEye( 0.0f, 0.0f, 1.0f );
+    manipulator->getHomePosition( eye, center, up );    
+    manipulator->setHomePosition( newEye, center, up );
+    
+    _window->getCanvas().setCameraManipulator( manipulator );
+    _window->getCanvas().getCamera()->setClearColor( osg::Vec4( 0.0f, 0.0f, 0.0f, 1.0f ) );
+    _window->getCanvas().getCamera()->setCullingMode( 
+        _window->getCanvas().getCamera()->getCullingMode() & ~osg::CullSettings::SMALL_FEATURE_CULLING );
+    
+    _sceneNode = new osg::Group;
     
     initScene();
+    
+    _window->getCanvas().setSceneData( _sceneNode );
+    _window->show();
 }
 
 
@@ -68,7 +85,7 @@ void GamutApplication::initScene()
     
     _sceneNode->addChild( gamutGeode );
            
-    _viewer.addEventHandler( new KeyboardEventHandler( gamutGeometry, axisGeometry ) );
+    //_viewer.addEventHandler( new KeyboardEventHandler( gamutGeometry, axisGeometry ) );
 }
 
 
@@ -83,10 +100,10 @@ GamutApplication* GamutApplication::getInstance()
 
 void GamutApplication::mainLoop()
 {
-    _viewer.realize();
+    /*_window->getCanvas().realize();
     
-    while( !_viewer.done() )
+    while( !_window->getCanvas().done() )
     {        
-        _viewer.frame();
-    }
+        _window->getCanvas().frame();
+    }*/
 }

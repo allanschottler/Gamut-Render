@@ -52,6 +52,9 @@ void GamutGeometry::setRenderMode( RenderMode renderMode )
         case XYZ:
             _isXYZ = true;
             break;
+            
+        default:
+            return;
     }
     
     buildGeometry();

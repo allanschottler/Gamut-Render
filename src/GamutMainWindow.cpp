@@ -26,7 +26,10 @@ GamutMainWindow::GamutMainWindow()
     }
     
     _dialog = GTK_WIDGET( gtk_builder_get_object( builder, "window1" ) );
-    _radioButton = GTK_WIDGET( gtk_builder_get_object( builder, "radiobutton1" ) );
+    _rgbButton = GTK_WIDGET( gtk_builder_get_object( builder, "radiobutton1" ) );
+    _xyzButton = GTK_WIDGET( gtk_builder_get_object( builder, "radiobutton2" ) );
+    _labButton = GTK_WIDGET( gtk_builder_get_object( builder, "radiobutton3" ) );
+    _srgbButton = GTK_WIDGET( gtk_builder_get_object( builder, "radiobutton4" ) );
 
     GtkWidget* canvasBox = GTK_WIDGET( gtk_builder_get_object( builder, "canvasBox" ) );
     
@@ -35,11 +38,17 @@ GamutMainWindow::GamutMainWindow()
         gtk_box_pack_start( GTK_BOX( canvasBox ), _canvas.getWidget(), true, true, 2 );        
     }
     
-    g_timeout_add( 15, (GSourceFunc)(&GamutMainWindow::onIdle), this );
+    g_timeout_add( 15, (GSourceFunc)( &GamutMainWindow::onIdle ), this );
     
-    gtk_signal_connect( GTK_OBJECT( _dialog ), "destroy", GTK_SIGNAL_FUNC(&GamutMainWindow::onDestroy), NULL );
-    gtk_signal_connect( GTK_OBJECT( _dialog ), "delete_event", GTK_SIGNAL_FUNC(&GamutMainWindow::onDestroy), NULL );
-    gtk_signal_connect( GTK_OBJECT( _radioButton ), "toggled", GTK_SIGNAL_FUNC(&GamutMainWindow::onRadioToggle), _radioButton );
+    g_signal_connect( G_OBJECT( _dialog ), "destroy", G_CALLBACK( &GamutMainWindow::onDestroy ), NULL );
+    g_signal_connect( G_OBJECT( _dialog ), "delete_event", G_CALLBACK( &GamutMainWindow::onDestroy ), NULL );
+    
+    g_signal_connect( G_OBJECT( _rgbButton ), "toggled", G_CALLBACK( &GamutMainWindow::onRadioToggle ), _dialog );
+    g_signal_connect( G_OBJECT( _xyzButton ), "toggled", G_CALLBACK( &GamutMainWindow::onRadioToggle ), _dialog );
+    g_signal_connect( G_OBJECT( _labButton ), "toggled", G_CALLBACK( &GamutMainWindow::onRadioToggle ), _dialog );
+    g_signal_connect( G_OBJECT( _srgbButton ), "toggled", G_CALLBACK( &GamutMainWindow::onRadioToggle ), _dialog );
+    
+    g_object_set_data( G_OBJECT( _dialog ), "THIS", (gpointer)this );
     
     g_object_unref( G_OBJECT( builder ) );
 }
@@ -63,9 +72,11 @@ OSGGTKDrawingArea& GamutMainWindow::getCanvas()
 }
 
 
-gboolean GamutMainWindow::onIdle()
+gboolean GamutMainWindow::onIdle( gpointer pointer )
 {
-    _canvas.queueDraw();
+    GamutMainWindow* dialog = reinterpret_cast< GamutMainWindow* >( pointer );
+    
+    dialog->_canvas.queueDraw();
     
     return TRUE;
 }
@@ -81,33 +92,43 @@ gboolean GamutMainWindow::onDestroy()
 
 gboolean GamutMainWindow::onRadioToggle( GtkWidget* widget, gpointer pointer )
 {
-    GSList* radioList = gtk_radio_button_get_group( GTK_RADIO_BUTTON( widget ) );
-    unsigned int iRadio = 0;
-    
-    while( radioList )
+    gpointer result = g_object_get_data( G_OBJECT( pointer ), "THIS" );
+
+    if( !result ) 
+        return FALSE;
+
+    GamutMainWindow* dialog = reinterpret_cast< GamutMainWindow* >( result );
+        
+    typedef GamutGeometry::RenderMode Mode;
+    Mode renderMode;      
+        
+    if( widget == dialog->_rgbButton )
+    {  
+        renderMode = GamutGeometry::RGB;
+    }
+    else if( widget == dialog->_xyzButton )
     {
-        GtkRadioButton* currentRadio = GTK_RADIO_BUTTON( radioList->data );
-        
-        bool isActive = gtk_toggle_button_get_active( GTK_TOGGLE_BUTTON( currentRadio ) );
-        
-        if( isActive )
-        {
-            typedef GamutGeometry::RenderMode Mode;
-            
-            Mode renderMode = static_cast< Mode >( iRadio );
-            GamutRenderModeVisitor visitor( renderMode );
-            
-            osg::ref_ptr< osg::Node > scene = _canvas.getSceneData();
-            
-            if( scene )
-                scene->accept( visitor );
-            
-            return TRUE;
-        }
-        
-        radioList = g_slist_next( radioList );
-        iRadio++;
+        renderMode = GamutGeometry::XYZ;
+    }
+    else if( widget == dialog->_labButton )
+    {
+        renderMode = GamutGeometry::LAB;
+    }
+    else if( widget == dialog->_srgbButton )
+    {
+        renderMode = GamutGeometry::SRGB;
+    }
+    else
+    {
+        return FALSE;
     }
     
-    return FALSE;
+    GamutRenderModeVisitor visitor( renderMode );
+
+    osg::ref_ptr< osg::Node > scene = dialog->_canvas.getSceneData();
+
+    if( scene )
+        scene->accept( visitor );
+
+    return TRUE;
 }

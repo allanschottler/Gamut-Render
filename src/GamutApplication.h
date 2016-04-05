@@ -10,6 +10,8 @@
 
 #include <osgViewer/Viewer>
 
+#include "GamutMainWindow.h"
+
 class GamutApplication 
 {
 public:
@@ -29,7 +31,9 @@ private:
     
     static GamutApplication* _instance;
     
-    osgViewer::Viewer _viewer;
+    //osgViewer::Viewer _viewer;
+    
+    GamutMainWindow* _window;
     
     osg::ref_ptr< osg::Group > _sceneNode;
 };

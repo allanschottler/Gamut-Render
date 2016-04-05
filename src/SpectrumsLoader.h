@@ -29,6 +29,7 @@ private:
     static const std::string CIE_G_CHANNEL;
     static const std::string CIE_B_CHANNEL;
     static const std::string CIE_D65_ILLUM;
+    static const std::string APP_PATH;
     
     static DiscreteSpectrum* load( const std::string& filePath );
 

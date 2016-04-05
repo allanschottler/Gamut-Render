@@ -21,6 +21,8 @@ LINKER   = g++ -o
 # linking flags here
 LFLAGS   = -Wall -I. -lm
 
+GTKFLAGS = -export-dynamic `pkg-config --cflags --libs gtk+-3.0 gtkglext-1.0 gtkglext-x11-1.0`
+
 # change these to set the proper directories where each files shoould be
 SRCDIR   = src
 OBJDIR   = obj
@@ -31,21 +33,15 @@ INCLUDES := $(wildcard $(SRCDIR)/*.h)
 OBJECTS  := $(SOURCES:$(SRCDIR)/%.cpp=$(OBJDIR)/%.o)
 rm       = rm -f
 
-INCLUDE = -I/home/p/libs/freeglut/2.6.0/include    \
-          -I/home/p/libs/glew/1.5.7/include        \
-          -I/home/p/libs/OSG3.2/include
+INCLUDE = -I/usr/include/gtk-2.0 -I/usr/lib/x86_64-linux-gnu/gtk-2.0/include -I/usr/include/pango-1.0 -I/usr/include/gio-unix-2.0/ -I/usr/include/freetype2 -I/usr/include/cairo -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/pixman-1 -I/usr/include/libpng12 -I/usr/include/atk-1.0 -I/usr/include/harfbuzz -I/usr/include/gtkglext-1.0 -I/usr/lib/gtkglext-1.0/include
 
 
-LIBSDIR =  -L/home/p/libs/freeglut/2.6.0/lib/Linux26g4_64 \
-           -L/home/p/libs/glew/1.5.7/lib/Linux26g4_64 \
-           -lGL	-lGLU -lglut -lGLEW \
-           -L/home/p/libs/OSG3.2/lib/Linux26g4_64              \
-           -losg -losgUtil -losgGA -losgDB -losgText -losgViewer -losgSim -lOpenThreads -fopenmp
+LIBSDIR = -lgtkglext-x11-1.0 -lgdkglext-x11-1.0 -lGLU -lGL -lXmu -lXt -lSM -lICE -lgtk-x11-2.0 -lpangox-1.0 -lX11 -lgmodule-2.0 -lgdk-x11-2.0 -latk-1.0 -lgio-2.0 -lpangoft2-1.0 -lpangocairo-1.0 -lgdk_pixbuf-2.0 -lcairo -lpango-1.0 -lfontconfig -lgobject-2.0 -lglib-2.0 -lfreetype -losg -losgUtil -losgGA -losgDB -losgText -losgViewer -losgSim -lOpenThreads -fopenmp
 
 
 
 $(BINDIR)/$(TARGET): $(OBJECTS)
-	@$(LINKER) $@ $(LFLAGS) $(INCLUDE) $(OBJECTS) $(LIBSDIR)
+	@$(LINKER) $@ $(LFLAGS) $(INCLUDE) $(OBJECTS) $(LIBSDIR) 
 	@echo "Linking complete!"
 
 $(OBJECTS): $(OBJDIR)/%.o : $(SRCDIR)/%.cpp

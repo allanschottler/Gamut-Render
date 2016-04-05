@@ -45,8 +45,11 @@ public:
     
     enum RenderMode
     {
-        RGB,
-        XYZ
+        RGB = 0,
+        XYZ,
+        LAB,
+        SRGB,
+        TOTAL
     };
     
     GamutGeometry( RGBSpectrum* rgbSpectrum, DiscreteSpectrum* illuminant );

@@ -26,14 +26,17 @@ public:
     
 private:
 
-    gboolean onIdle();
+    static gboolean onIdle( gpointer user_data );
     
-    gboolean onDestroy();
+    static gboolean onDestroy();
     
-    gboolean onRadioToggle( GtkWidget* widget, gpointer pointer );
+    static gboolean onRadioToggle( GtkWidget* widget, gpointer pointer );
     
     GtkWidget* _dialog;
-    GtkWidget* _radioButton;
+    GtkWidget* _rgbButton;
+    GtkWidget* _xyzButton;
+    GtkWidget* _labButton;
+    GtkWidget* _srgbButton;
     
     OSGGTKDrawingArea _canvas;
 };

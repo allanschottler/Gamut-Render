@@ -30,11 +30,9 @@ void GamutGeometryUpdater::apply( osg::Node& node )
             
             if( gamutGeometry )
             {
-                if( _renderMode != GamutGeometry::RENDER_NONE )
-                    gamutGeometry->setRenderMode( _renderMode );
+                gamutGeometry->setRenderMode( _renderMode );
                 
-                if( _colorMode != GamutGeometry::COLOR_NONE )
-                    gamutGeometry->setColorMode( _colorMode );
+                gamutGeometry->setColorMode( _colorMode );
                 
                 return;
             }

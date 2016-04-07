@@ -53,6 +53,9 @@ GamutGeometry::~GamutGeometry()
 
 void GamutGeometry::setColorMode( ColorMode colorMode )
 {
+    if( colorMode == COLOR_NONE )
+        return;
+    
     switch( colorMode )
     {
         case RGB:
@@ -81,6 +84,9 @@ void GamutGeometry::setColorMode( ColorMode colorMode )
 
 void GamutGeometry::setRenderMode( RenderMode renderMode )
 {
+    if( renderMode == RENDER_NONE )
+        return;
+    
     _renderMode = renderMode;
     
     buildGeometry();
@@ -218,7 +224,7 @@ void GamutGeometry::polygonPlot( VertexArrayPtr vertexArray, ColorArrayPtr color
 {
     int boxSize, boxStart, index = 0; 
     
-    for( boxSize = SPECTRUM_INC_WL; 
+    for( boxSize = 0; 
          boxSize < ( SPECTRUM_LAST_WL - SPECTRUM_FIRST_WL ) / SPECTRUM_INC_WL;
          boxSize += SPECTRUM_INC_WL )
     { 
@@ -288,6 +294,9 @@ void GamutGeometry::getXYZ( int boxStart, int boxSize, float& x, float& y, float
     z = 0;
     int sumSize = 0;
 
+    if( boxSize == 0 )
+        return;
+    
     int boxEnd = boxStart + boxSize * SPECTRUM_INC_WL;
 
     if( boxEnd > SPECTRUM_LAST_WL )

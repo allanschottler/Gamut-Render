@@ -11,6 +11,7 @@
 #include "DiscreteSpectrum.h"
 
 #include <osg/Geometry>
+#include <functional>
 
 class DiscreteSpectrum;
 
@@ -43,18 +44,28 @@ public:
         DiscreteSpectrum *_r, *_g, *_b;
     };
     
-    enum RenderMode
+    enum ColorMode
     {
         RGB = 0,
         XYZ,
         LAB,
         SRGB,
-        TOTAL
+        COLOR_NONE
+    };
+    
+    enum RenderMode
+    {
+        POINTS = 0,
+        LINES,
+        POLYGON,
+        RENDER_NONE
     };
     
     GamutGeometry( RGBSpectrum* rgbSpectrum, DiscreteSpectrum* illuminant );
     
     virtual ~GamutGeometry();
+    
+    void setColorMode( ColorMode colorMode );
     
     void setRenderMode( RenderMode renderMode );
         
@@ -64,20 +75,49 @@ public:
     
     static const osg::Matrixd _rgbToSRGBMatrix;
     
-private:
+    static const std::vector< float > referenceWhite; //d65
+    
+private:    
+    
+    typedef osg::ref_ptr< osg::DrawElementsUInt > PrimitiveArrayPtr;
+    typedef osg::ref_ptr< osg::Vec3Array >        VertexArrayPtr;
+    typedef osg::ref_ptr< osg::Vec4Array >        ColorArrayPtr;
+    
+    void calculateK();
     
     void buildGeometry();
+    
+    void pointPlot( VertexArrayPtr vertexArray, ColorArrayPtr colorArray );
+    
+    void linePlot( VertexArrayPtr vertexArray, ColorArrayPtr colorArray );
+    
+    void polygonPlot( VertexArrayPtr vertexArray, ColorArrayPtr colorArray );    
     
     void getRGB( int wavelength, float& r, float& g, float& b );
     
     void getXYZ( int boxStart, int boxSize, float& x, float& y, float& z );
+    
+    
+    static bool identityTransform( const osg::Vec3& rgb, osg::Vec3& rgb0 );
+    
+    static bool rgbToXYZTransform( const osg::Vec3& rgb, osg::Vec3& xyz );
+    
+    static bool rgbToLabTransform( const osg::Vec3& rgb, osg::Vec3& lab );
+    
+    static bool rgbToSRGBTransform( const osg::Vec3& rgb, osg::Vec3& srgb );
     
 
     RGBSpectrum* _rgbSpectrum;
     
     DiscreteSpectrum* _illuminant;
     
-    osg::Matrixd _currentMatrix;
+    typedef std::function< bool ( const osg::Vec3&, osg::Vec3& ) > ColorTransform;
+    
+    ColorTransform _currentTransform;
+    
+    float _k;
+    
+    RenderMode _renderMode;
 };
 
 #endif	/* GAMUTGEOMETRY_H */

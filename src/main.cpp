@@ -1,7 +1,7 @@
 #include <iostream>
 
 #include <gtk/gtk.h>
-#include <gtkglext-1.0/gtk/gtkgl.h>
+#include <gtk/gtkgl.h>
 
 #include "GamutApplication.h"
 

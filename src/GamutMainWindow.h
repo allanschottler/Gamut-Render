@@ -30,13 +30,20 @@ private:
     
     static gboolean onDestroy();
     
-    static gboolean onRadioToggle( GtkWidget* widget, gpointer pointer );
+    static gboolean onColorRadioToggle( GtkWidget* widget, gpointer pointer );
+    
+    static gboolean onRenderRadioToggle( GtkWidget* widget, gpointer pointer );
     
     GtkWidget* _dialog;
+    
     GtkWidget* _rgbButton;
     GtkWidget* _xyzButton;
     GtkWidget* _labButton;
     GtkWidget* _srgbButton;
+    
+    GtkWidget* _pointsButton;
+    GtkWidget* _linesButton;
+    GtkWidget* _polygonButton;
     
     OSGGTKDrawingArea _canvas;
 };

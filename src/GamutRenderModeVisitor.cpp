@@ -10,7 +10,7 @@
 #include "GamutRenderModeVisitor.h"
 #include "GamutGeometry.h"
 
-GamutRenderModeVisitor::GamutRenderModeVisitor( GamutGeometry::RenderMode renderMode ) : 
+GamutRenderModeVisitor::GamutRenderModeVisitor( GamutGeometry::ColorMode renderMode ) : 
     osg::NodeVisitor( osg::NodeVisitor::TRAVERSE_ALL_CHILDREN ),
     _renderMode( renderMode )
 {
@@ -31,7 +31,7 @@ void GamutRenderModeVisitor::apply( osg::Node& node )
             
             if( gamutGeometry )
             {
-                gamutGeometry->setRenderMode( _renderMode );
+                gamutGeometry->setColorMode( _renderMode );
                 
                 return;
             }

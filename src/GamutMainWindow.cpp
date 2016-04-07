@@ -10,6 +10,7 @@
 
 #include "GamutMainWindow.h"
 #include "GamutRenderModeVisitor.h"
+#include "GamutGeometryUpdater.h"
 
 GamutMainWindow::GamutMainWindow() 
 {
@@ -26,10 +27,15 @@ GamutMainWindow::GamutMainWindow()
     }
     
     _dialog = GTK_WIDGET( gtk_builder_get_object( builder, "window1" ) );
+    
     _rgbButton = GTK_WIDGET( gtk_builder_get_object( builder, "radiobutton1" ) );
     _xyzButton = GTK_WIDGET( gtk_builder_get_object( builder, "radiobutton2" ) );
     _labButton = GTK_WIDGET( gtk_builder_get_object( builder, "radiobutton3" ) );
     _srgbButton = GTK_WIDGET( gtk_builder_get_object( builder, "radiobutton4" ) );
+    
+    _pointsButton = GTK_WIDGET( gtk_builder_get_object( builder, "radiobutton5" ) );
+    _linesButton = GTK_WIDGET( gtk_builder_get_object( builder, "radiobutton6" ) );
+    _polygonButton = GTK_WIDGET( gtk_builder_get_object( builder, "radiobutton7" ) );
 
     GtkWidget* canvasBox = GTK_WIDGET( gtk_builder_get_object( builder, "canvasBox" ) );
     
@@ -43,10 +49,14 @@ GamutMainWindow::GamutMainWindow()
     g_signal_connect( G_OBJECT( _dialog ), "destroy", G_CALLBACK( &GamutMainWindow::onDestroy ), NULL );
     g_signal_connect( G_OBJECT( _dialog ), "delete_event", G_CALLBACK( &GamutMainWindow::onDestroy ), NULL );
     
-    g_signal_connect( G_OBJECT( _rgbButton ), "toggled", G_CALLBACK( &GamutMainWindow::onRadioToggle ), _dialog );
-    g_signal_connect( G_OBJECT( _xyzButton ), "toggled", G_CALLBACK( &GamutMainWindow::onRadioToggle ), _dialog );
-    g_signal_connect( G_OBJECT( _labButton ), "toggled", G_CALLBACK( &GamutMainWindow::onRadioToggle ), _dialog );
-    g_signal_connect( G_OBJECT( _srgbButton ), "toggled", G_CALLBACK( &GamutMainWindow::onRadioToggle ), _dialog );
+    g_signal_connect( G_OBJECT( _rgbButton ), "toggled", G_CALLBACK( &GamutMainWindow::onColorRadioToggle ), _dialog );
+    g_signal_connect( G_OBJECT( _xyzButton ), "toggled", G_CALLBACK( &GamutMainWindow::onColorRadioToggle ), _dialog );
+    g_signal_connect( G_OBJECT( _labButton ), "toggled", G_CALLBACK( &GamutMainWindow::onColorRadioToggle ), _dialog );
+    g_signal_connect( G_OBJECT( _srgbButton ), "toggled", G_CALLBACK( &GamutMainWindow::onColorRadioToggle ), _dialog );
+    
+    g_signal_connect( G_OBJECT( _pointsButton ), "toggled", G_CALLBACK( &GamutMainWindow::onRenderRadioToggle ), _dialog );
+    g_signal_connect( G_OBJECT( _linesButton ), "toggled", G_CALLBACK( &GamutMainWindow::onRenderRadioToggle ), _dialog );
+    g_signal_connect( G_OBJECT( _polygonButton ), "toggled", G_CALLBACK( &GamutMainWindow::onRenderRadioToggle ), _dialog );
     
     g_object_set_data( G_OBJECT( _dialog ), "THIS", (gpointer)this );
     
@@ -90,7 +100,52 @@ gboolean GamutMainWindow::onDestroy()
 }
 
 
-gboolean GamutMainWindow::onRadioToggle( GtkWidget* widget, gpointer pointer )
+gboolean GamutMainWindow::onColorRadioToggle( GtkWidget* widget, gpointer pointer )
+{
+    gpointer result = g_object_get_data( G_OBJECT( pointer ), "THIS" );
+
+    if( !result ) 
+        return FALSE;
+
+    GamutMainWindow* dialog = reinterpret_cast< GamutMainWindow* >( result );
+        
+    typedef GamutGeometry::ColorMode Mode;
+    Mode colorMode;      
+        
+    if( widget == dialog->_rgbButton )
+    {  
+        colorMode = GamutGeometry::RGB;
+    }
+    else if( widget == dialog->_xyzButton )
+    {
+        colorMode = GamutGeometry::XYZ;
+    }
+    else if( widget == dialog->_labButton )
+    {
+        colorMode = GamutGeometry::LAB;
+    }
+    else if( widget == dialog->_srgbButton )
+    {
+        colorMode = GamutGeometry::SRGB;
+    }
+    else
+    {
+        return FALSE;
+    }
+    
+    GamutGeometryUpdater updater;
+    updater.setColorMode( colorMode );
+    
+    osg::ref_ptr< osg::Node > scene = dialog->_canvas.getSceneData();
+
+    if( scene )
+        scene->accept( updater );
+
+    return TRUE;
+}
+
+
+gboolean GamutMainWindow::onRenderRadioToggle( GtkWidget* widget, gpointer pointer )
 {
     gpointer result = g_object_get_data( G_OBJECT( pointer ), "THIS" );
 
@@ -102,33 +157,30 @@ gboolean GamutMainWindow::onRadioToggle( GtkWidget* widget, gpointer pointer )
     typedef GamutGeometry::RenderMode Mode;
     Mode renderMode;      
         
-    if( widget == dialog->_rgbButton )
+    if( widget == dialog->_pointsButton )
     {  
-        renderMode = GamutGeometry::RGB;
+        renderMode = GamutGeometry::POINTS;
     }
-    else if( widget == dialog->_xyzButton )
+    else if( widget == dialog->_linesButton )
     {
-        renderMode = GamutGeometry::XYZ;
+        renderMode = GamutGeometry::LINES;
     }
-    else if( widget == dialog->_labButton )
+    else if( widget == dialog->_polygonButton )
     {
-        renderMode = GamutGeometry::LAB;
-    }
-    else if( widget == dialog->_srgbButton )
-    {
-        renderMode = GamutGeometry::SRGB;
+        renderMode = GamutGeometry::POLYGON;
     }
     else
     {
         return FALSE;
     }
     
-    GamutRenderModeVisitor visitor( renderMode );
-
+    GamutGeometryUpdater updater;
+    updater.setRenderMode( renderMode );
+    
     osg::ref_ptr< osg::Node > scene = dialog->_canvas.getSceneData();
 
     if( scene )
-        scene->accept( visitor );
+        scene->accept( updater );
 
     return TRUE;
 }

@@ -16,7 +16,7 @@ class GamutRenderModeVisitor : public osg::NodeVisitor
 {
 public:
     
-    GamutRenderModeVisitor( GamutGeometry::RenderMode renderMode );
+    GamutRenderModeVisitor( GamutGeometry::ColorMode renderMode );
     
     virtual ~GamutRenderModeVisitor() {};    
 
@@ -24,7 +24,7 @@ public:
     
 private:
     
-    GamutGeometry::RenderMode _renderMode;
+    GamutGeometry::ColorMode _renderMode;
 
 };
 

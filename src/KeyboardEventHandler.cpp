@@ -36,7 +36,7 @@ bool KeyboardEventHandler::handle( const osgGA::GUIEventAdapter& ea, osgGA::GUIA
                     osg::ref_ptr< AxisGeometry > axisGeometry = osg::dynamic_pointer_cast< AxisGeometry >( _axis );
                     
                     if( gamutGeometry )
-                        gamutGeometry->setRenderMode( GamutGeometry::RGB );
+                        gamutGeometry->setColorMode( GamutGeometry::RGB );
                     
                     /*if( axisGeometry )
                         axisGeometry->setRenderMode( AxisGeometry::RGB );*/
@@ -50,7 +50,7 @@ bool KeyboardEventHandler::handle( const osgGA::GUIEventAdapter& ea, osgGA::GUIA
                     osg::ref_ptr< AxisGeometry > axisGeometry = osg::dynamic_pointer_cast< AxisGeometry >( _axis );
                     
                     if( gamutGeometry )
-                        gamutGeometry->setRenderMode( GamutGeometry::XYZ );
+                        gamutGeometry->setColorMode( GamutGeometry::XYZ );
                     
                     /*if( axisGeometry )
                         axisGeometry->setRenderMode( AxisGeometry::XYZ );*/

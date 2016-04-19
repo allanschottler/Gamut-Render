@@ -66,6 +66,10 @@ void GamutGeometry::setColorMode( ColorMode colorMode )
             _currentTransform = &GamutGeometry::rgbToXYZTransform;
             break;
             
+        case XYY:
+            _currentTransform = &GamutGeometry::rgbToXYYTransform;
+            break;
+            
         case LAB:
             _currentTransform = &GamutGeometry::rgbToLabTransform;
             break;
@@ -355,6 +359,18 @@ bool GamutGeometry::rgbToXYZTransform( const osg::Vec3& rgb, osg::Vec3& xyz )
     return true;
 }
 
+
+bool GamutGeometry::rgbToXYYTransform( const osg::Vec3& rgb, osg::Vec3& xyY )
+{
+    if( rgbToXYZTransform( rgb, xyY ) )
+    {
+        xyY /= ( xyY.x() + xyY.y() + xyY.z() );
+        return true;
+    }
+    
+    return false;
+}
+
     
 bool GamutGeometry::rgbToLabTransform( const osg::Vec3& rgb, osg::Vec3& lab )
 {
@@ -385,6 +401,8 @@ bool GamutGeometry::rgbToLabTransform( const osg::Vec3& rgb, osg::Vec3& lab )
             (float)( 500 * ( fx - fy ) ), 
             (float)( 200 * ( fy - fz ) ) 
         );
+        
+        lab /= 100.;
 
         return true;
     }

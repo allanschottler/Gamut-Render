@@ -48,6 +48,7 @@ public:
     {
         RGB = 0,
         XYZ,
+        XYY,
         LAB,
         SRGB,
         COLOR_NONE
@@ -101,6 +102,8 @@ private:
     static bool identityTransform( const osg::Vec3& rgb, osg::Vec3& rgb0 );
     
     static bool rgbToXYZTransform( const osg::Vec3& rgb, osg::Vec3& xyz );
+    
+    static bool rgbToXYYTransform( const osg::Vec3& rgb, osg::Vec3& xyz );
     
     static bool rgbToLabTransform( const osg::Vec3& rgb, osg::Vec3& lab );
     

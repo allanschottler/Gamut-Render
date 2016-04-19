@@ -12,7 +12,7 @@
 GamutGeometryUpdater::GamutGeometryUpdater() :
     osg::NodeVisitor( osg::NodeVisitor::TRAVERSE_ALL_CHILDREN ),    
     _colorMode( GamutGeometry::COLOR_NONE ),
-    _renderMode( GamutGeometry::RENDER_NONE )
+    _renderMode( GamutGeometry::RENDER_NONE ) 
 {
 }
 

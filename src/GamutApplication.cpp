@@ -9,7 +9,6 @@
 #include "SpectrumsLoader.h"
 #include "GamutGeometry.h"
 #include "AxisGeometry.h"
-#include "KeyboardEventHandler.h"
 
 #include <osgGA/TrackballManipulator>
 #include <osg/Point>

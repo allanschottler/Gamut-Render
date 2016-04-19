@@ -38,6 +38,7 @@ private:
     
     GtkWidget* _rgbButton;
     GtkWidget* _xyzButton;
+    GtkWidget* _xyyButton;
     GtkWidget* _labButton;
     GtkWidget* _srgbButton;
     

@@ -30,6 +30,7 @@ GamutMainWindow::GamutMainWindow()
     
     _rgbButton = GTK_WIDGET( gtk_builder_get_object( builder, "radiobutton1" ) );
     _xyzButton = GTK_WIDGET( gtk_builder_get_object( builder, "radiobutton2" ) );
+    _xyyButton = GTK_WIDGET( gtk_builder_get_object( builder, "radiobutton8" ) );
     _labButton = GTK_WIDGET( gtk_builder_get_object( builder, "radiobutton3" ) );
     _srgbButton = GTK_WIDGET( gtk_builder_get_object( builder, "radiobutton4" ) );
     
@@ -51,6 +52,7 @@ GamutMainWindow::GamutMainWindow()
     
     g_signal_connect( G_OBJECT( _rgbButton ), "toggled", G_CALLBACK( &GamutMainWindow::onColorRadioToggle ), _dialog );
     g_signal_connect( G_OBJECT( _xyzButton ), "toggled", G_CALLBACK( &GamutMainWindow::onColorRadioToggle ), _dialog );
+    g_signal_connect( G_OBJECT( _xyyButton ), "toggled", G_CALLBACK( &GamutMainWindow::onColorRadioToggle ), _dialog );
     g_signal_connect( G_OBJECT( _labButton ), "toggled", G_CALLBACK( &GamutMainWindow::onColorRadioToggle ), _dialog );
     g_signal_connect( G_OBJECT( _srgbButton ), "toggled", G_CALLBACK( &GamutMainWindow::onColorRadioToggle ), _dialog );
     
@@ -119,6 +121,10 @@ gboolean GamutMainWindow::onColorRadioToggle( GtkWidget* widget, gpointer pointe
     else if( widget == dialog->_xyzButton )
     {
         colorMode = GamutGeometry::XYZ;
+    }
+    else if( widget == dialog->_xyyButton )
+    {
+        colorMode = GamutGeometry::XYY;
     }
     else if( widget == dialog->_labButton )
     {
